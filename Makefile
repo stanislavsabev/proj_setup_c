@@ -57,8 +57,8 @@ makedir: ## Create buld directories
 build: makedir $(TARGET) ## Build Release
 	@printf "build: OK\n"
 
-.PHONY: build_debug ## Build Debug
-build_debug: makedir $(TARGET_DEBUG)
+.PHONY: build_debug
+build_debug: makedir $(TARGET_DEBUG) ## Build Debug
 	@printf "build debug: OK\n"
 
 .PHONY: debug
@@ -73,5 +73,5 @@ run: build ## Run Release
 
 .PHONY: clean
 clean: ## Clean build directories
-	@echo CLEAN $(CLEAN_LIST)
+	@echo Clean $(CLEAN_LIST)
 	@rm -rf $(CLEAN_LIST)

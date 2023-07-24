@@ -8,6 +8,6 @@ int main(int argc, char const *argv[])
 
     char* world = "world";
     
-    printf("Hello %s\n", world);
+    printf("Hello %s!\n", world);
     return 0;
 }
