@@ -21,7 +21,6 @@ $ cd  <your-project-name>
 
 ```shell
 $ git init
-
 ```
 
 ## Development
