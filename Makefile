@@ -1,15 +1,24 @@
+CC = gcc
+STD = -std=c17
+CFLAGS = -Wall -Wextra -g $(STD)
+DFLAGS = DEBUG
 
-CC=gcc
-CSTANDARD=-std=c17
-WFLAGS=-Wall -Wextra
-CFLAGS=$(WFLAGS) $(CSTANDARD)
+# Directories
+SRC_DIR = ./src
+INC_DIR = ./include
+LIB_DIR = ./lib
+OBJ_DIR = ./obj
+BIN_DIR = ./bin
+DEBUG_DIR = $(OBJ_DIR)/debug
+BIN_DEBUG_DIR = $(BIN_DIR)/debug
 
-SRC_DIR=src
-OBJ_DIR=obj
-BIN_DIR=bin
-DEBUG_DIR=$(OBJ_DIR)/debug
-BIN_DEBUG_DIR=$(BIN_DIR)/debug
-TARGET_NAME=main
+# Libraries
+# FXLIB_DIR = $(PROJECTS_DIR)/fx-c
+# FXLIB = fxlib.a
+
+# Target name
+TARGET_NAME = main
+
 
 # compile macros
 TARGET_NAME := main
@@ -18,6 +27,7 @@ ifeq ($(OS),Windows_NT)
 endif
 TARGET := $(BIN_DIR)/$(TARGET_NAME)
 TARGET_DEBUG := $(BIN_DEBUG_DIR)/$(TARGET_NAME)
+DFLAGS := $(addprefix -D,$(DFLAGS))
 
 
 # src files & obj files
@@ -31,7 +41,6 @@ CLEAN_LIST := $(BIN_DIR) $(OBJ_DIR)
 # default rule
 default: all
 
-.PHONY: all
 all: help
 
 .PHONY: help
@@ -46,38 +55,36 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c*
 	$(CC) $(CFLAGS) -c -o $@ $^
 
 $(DEBUG_DIR)/%.o: $(SRC_DIR)/%.c*
-	$(CC) $(CFLAGS) -c -g -o $@ $^
+	$(CC) $(CFLAGS) $(DFLAGS)  -c -g -o $@ $^
 
 $(TARGET_DEBUG): $(OBJS_DEBUG)
-	$(CC) $(CFLAGS) -g -o $@ $^
+	$(CC) $(CFLAGS) $(DFLAGS)  -g -o $@ $^
  
 # phony rules
-.PHONY: makedir
 makedir: ## Create buld directories
-	@mkdir -p $(BIN_DIR) $(OBJ_DIR) $(DEBUG_DIR) $(BIN_DEBUG_DIR)
+	@mkdir -p $(BIN_DIR) $(OBJ_DIR) $(DEBUG_DIR) $(BIN_DEBUG_DIR) $(LIB_DIR) $(INC_DIR)
 
-.PHONY: build
 build: build_release build_debug ## Build all
 
-.PHONY: build_release
-build: makedir $(TARGET) ## Build Release
+rebuild: clean build ## Clean and rebuild target
+
+build_release: makedir $(TARGET) ## Build Release
 	@printf "build: OK\n"
 
-.PHONY: build_debug ## Build Debug
-build_debug: makedir $(TARGET_DEBUG)
-	@printf "build debug: OK\n"
+build_debug: makedir $(TARGET_DEBUG) ## Build Debug
+	@printf "debug build: OK\n"
 
-.PHONY: debug
 debug: build_debug ## Run Debug
 	@printf "debug: "
 	./$(TARGET_DEBUG)
 
-.PHONY: run
 run: build ## Run Release
 	@printf "run: "
 	./$(TARGET)
 
-.PHONY: clean
 clean: ## Clean build directories
 	@echo Clean $(CLEAN_LIST)
 	@rm -rf $(CLEAN_LIST)
+
+
+.PHONY: makedir clean build run debug build_release build_debug
