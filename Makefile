@@ -43,10 +43,6 @@ default: all
 
 all: help
 
-.PHONY: help
-help: ## Show this message
-	@awk 'BEGIN {FS = ":.*##"; printf "Usage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
-
 # non-phony targets
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS)
@@ -61,30 +57,37 @@ $(TARGET_DEBUG): $(OBJS_DEBUG)
 	$(CC) $(CFLAGS) $(DFLAGS)  -g -o $@ $^
  
 # phony rules
-makedir: ## Create buld directories
-	@mkdir -p $(BIN_DIR) $(OBJ_DIR) $(DEBUG_DIR) $(BIN_DEBUG_DIR) $(LIB_DIR) $(INC_DIR)
 
+b: build ##
 build: build_release build_debug ## Build all
 
+rb: rebuild ##
 rebuild: clean build ## Clean and rebuild target
 
-build_release: makedir $(TARGET) ## Build Release
+release: makedir $(TARGET) ## Build Release
 	@printf "build: OK\n"
 
-build_debug: makedir $(TARGET_DEBUG) ## Build Debug
+debug: makedir $(TARGET_DEBUG) ## Build Debug
 	@printf "debug build: OK\n"
-
-debug: build_debug ## Run Debug
-	@printf "debug: "
-	./$(TARGET_DEBUG)
 
 run: build ## Run Release
 	@printf "run: "
-	./$(TARGET)
+	$(TARGET_DEBUG)
+	# $(TARGET)
 
+c: clean ##
 clean: ## Clean build directories
 	@echo Clean $(CLEAN_LIST)
 	@rm -rf $(CLEAN_LIST)
 
+makedirs: ## Create buld directories
+	@mkdir -p $(BIN_DIR) $(OBJ_DIR) $(DEBUG_DIR) $(BIN_DEBUG_DIR) $(LIB_DIR) $(INC_DIR)
 
-.PHONY: makedir clean build run debug build_release build_debug
+h: help ##
+help: ## Show this message
+	@awk 'BEGIN {FS = ":.*##"; printf "Usage:\n  make  \033[36m<target>\033[0m\n\nTargets:\n"} \
+    /^[a-zA-Z_-]+:.*?##/ { if(length($$2) == 0 ) { printf "\033[36m%7s\033[0m", $$1 } \
+							  else { printf "\t\033[36m%-10s\033[0m %s\n", $$1, $$2 }}' $(MAKEFILE_LIST)
+
+
+.PHONY: help makedir clean build run debug build_release build_debug
