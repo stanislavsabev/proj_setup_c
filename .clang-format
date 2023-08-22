@@ -1,0 +1,8 @@
+---
+Language: Cpp
+BasedOnStyle:  Google
+SpacesBeforeTrailingComments: 3
+ColumnLimit: 99
+PointerAlignment: Right
+AllowShortFunctionsOnASingleLine: InlineOnly
+IndentWidth: 4

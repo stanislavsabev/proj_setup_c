@@ -19,7 +19,6 @@ BIN_DEBUG_DIR = $(BIN_DIR)/debug
 # Target name
 TARGET_NAME = main
 
-
 # compile macros
 TARGET_NAME := main
 ifeq ($(OS),Windows_NT)
@@ -29,7 +28,6 @@ TARGET := $(BIN_DIR)/$(TARGET_NAME)
 TARGET_DEBUG := $(BIN_DEBUG_DIR)/$(TARGET_NAME)
 DFLAGS := $(addprefix -D,$(DFLAGS))
 
-
 # src files & obj files
 SRCS := $(foreach x, $(SRC_DIR), $(wildcard $(addprefix $(x)/*,.c*)))
 OBJS := $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(notdir $(basename $(SRCS)))))
@@ -38,10 +36,8 @@ OBJS_DEBUG := $(addprefix $(DEBUG_DIR)/, $(addsuffix .o, $(notdir $(basename $(S
 # clean files list
 CLEAN_LIST := $(BIN_DIR) $(OBJ_DIR)
 
-# default rule
-default: all
 
-all: help
+all: help ## Default rule
 
 # non-phony targets
 $(TARGET): $(OBJS)
@@ -67,6 +63,7 @@ rebuild: clean build ## Clean and rebuild target
 release: makedir $(TARGET) ## Build Release
 	@printf "build: OK\n"
 
+db: debug ##
 debug: makedir $(TARGET_DEBUG) ## Build Debug
 	@printf "debug build: OK\n"
 
@@ -82,6 +79,15 @@ clean: ## Clean build directories
 
 makedirs: ## Create buld directories
 	@mkdir -p $(BIN_DIR) $(OBJ_DIR) $(DEBUG_DIR) $(BIN_DEBUG_DIR) $(LIB_DIR) $(INC_DIR)
+
+libs: ## Source external libraries
+	mkdir -p  $(LIBFXC_INC_DIR)
+	$(RM)  $(LIB_DIR)/* $(LIBFXC_INC_DIR)/*
+	@cp -fr $(LIBFXC_SRC_DIR)/include/* $(LIBFXC_INC_DIR)
+	@cp -fr $(LIBFXC_SRC_DIR)/lib/* $(LIB_DIR)
+
+format: ## Format with clang-format
+	@clang-format -i $(SRCS)
 
 h: help ##
 help: ## Show this message
