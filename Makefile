@@ -30,6 +30,8 @@ DFLAGS := $(addprefix -D,$(DFLAGS))
 
 # src files & obj files
 SRCS := $(foreach x, $(SRC_DIR), $(wildcard $(addprefix $(x)/*,.c*)))
+SRC_HEADERS=$(wildcard $(SRC_DIR)/*.h)
+INC_HEADERS=$(wildcard $(INC_DIR)/*.h)
 OBJS := $(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(notdir $(basename $(SRCS)))))
 OBJS_DEBUG := $(addprefix $(DEBUG_DIR)/, $(addsuffix .o, $(notdir $(basename $(SRCS)))))
 
@@ -57,14 +59,20 @@ $(TARGET_DEBUG): $(OBJS_DEBUG)
 b: build ##
 build: build_release build_debug ## Build all
 
+
 rb: rebuild ##
 rebuild: clean build ## Clean and rebuild target
 
-release: makedir $(TARGET) ## Build Release
+
+release: makedirs headers $(TARGET) ## Build Release
 	@printf "build: OK\n"
 
+
+headers: $(SRC_HEADERS) $(INC_HEADERS)
+
+
 db: debug ##
-debug: makedir $(TARGET_DEBUG) ## Build Debug
+debug: makedirs headers $(TARGET_DEBUG) ## Build Debug
 	@printf "debug build: OK\n"
 
 run: build ## Run Release
@@ -72,13 +80,16 @@ run: build ## Run Release
 	$(TARGET_DEBUG)
 	# $(TARGET)
 
+
 c: clean ##
 clean: ## Clean build directories
 	@echo Clean $(CLEAN_LIST)
 	@rm -rf $(CLEAN_LIST)
 
+
 makedirs: ## Create buld directories
 	@mkdir -p $(BIN_DIR) $(OBJ_DIR) $(DEBUG_DIR) $(BIN_DEBUG_DIR) $(LIB_DIR) $(INC_DIR)
+
 
 libs: ## Source external libraries
 	mkdir -p  $(LIBFXC_INC_DIR)
@@ -86,8 +97,10 @@ libs: ## Source external libraries
 	@cp -fr $(LIBFXC_SRC_DIR)/include/* $(LIBFXC_INC_DIR)
 	@cp -fr $(LIBFXC_SRC_DIR)/lib/* $(LIB_DIR)
 
+
 format: ## Format with clang-format
 	@clang-format -i $(SRCS)
+
 
 h: help ##
 help: ## Show this message
@@ -95,4 +108,5 @@ help: ## Show this message
     /^[a-zA-Z_-]+:.*?##/ { if(length($$2) == 0 ) { printf "\033[36m%7s\033[0m", $$1 } \
 							  else { printf "\t\033[36m%-10s\033[0m %s\n", $$1, $$2 }}' $(MAKEFILE_LIST)
 
-.PHONY: h help c clean b build rb rebuild run debug release makedirs
+
+.PHONY: b build rb rebuild release headers db debug run c clean makedirs libs format h help

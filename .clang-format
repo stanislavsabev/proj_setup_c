@@ -6,3 +6,4 @@ ColumnLimit: 99
 PointerAlignment: Right
 AllowShortFunctionsOnASingleLine: InlineOnly
 IndentWidth: 4
+AlignConsecutiveMacros: Consecutive
